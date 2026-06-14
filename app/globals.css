@@ -1,0 +1,90 @@
+@import "tailwindcss";
+
+/* Self-hosted families — display is the only weight that uses Di Grotesk. */
+@font-face {
+  font-family: "Di Grotesk";
+  src: url("/fonts/DiGrotesk-Bold.ttf") format("truetype");
+  font-weight: 700;
+  font-style: normal;
+  font-display: swap;
+}
+
+@font-face {
+  font-family: "Inconsolata Condensed";
+  src: url("/fonts/Inconsolata_Condensed-Medium.ttf") format("truetype");
+  font-weight: 500;
+  font-style: normal;
+  font-display: swap;
+}
+
+@theme {
+  --color-bg: #f5f3ef;
+  --color-fg: #111111;
+  --color-muted: #6b6862; /* secondary text */
+  --color-line: #dad6ce; /* hairline rules / seams */
+  --color-accent: #c8462b; /* single accent slot, swap per project */
+
+  /* Two font slots only. */
+  --font-display: "Di Grotesk", sans-serif;
+  --font-body: "Inconsolata Condensed", ui-monospace, monospace;
+
+  /* 8px spacing scale: every numeric spacing utility steps by 8px (p-1 = 8px, p-2 = 16px, …). */
+  --spacing: 0.5rem;
+  /* 1200px for the content, 1600px for the media */
+  --width-content: 1440px;
+  --width-media: 1600px;
+
+  /* Vertical rhythm between sections: one value mobile, one for lg+. */
+  --space-section: 24px;
+  --space-section-lg: 32px;
+}
+
+@layer base {
+  html {
+    -webkit-text-size-adjust: 100%;
+  }
+  body {
+    background: var(--color-bg);
+    color: var(--color-fg);
+    font-family: var(--font-body);
+    -webkit-font-smoothing: antialiased;
+    text-rendering: optimizeLegibility;
+  }
+}
+
+/* Four type roles. Use these everywhere — never ad-hoc font sizes. */
+@utility text-display {
+  font-family: var(--font-display);
+  font-size: clamp(2.5rem, 7vw, 6.5rem);
+  line-height: 0.95;
+  letter-spacing: -0.02em;
+}
+
+@utility text-h2 {
+  font-family: var(--font-display);
+  font-size: clamp(1.5rem, 3.5vw, 3rem);
+  line-height: 1.02;
+  letter-spacing: -0.015em;
+}
+
+@utility text-body {
+  font-family: var(--font-body);
+  font-size: clamp(0.95rem, 1.05vw, 1.125rem);
+  line-height: 1.5;
+}
+
+@utility text-meta {
+  font-family: var(--font-body);
+  font-size: 0.75rem;
+  line-height: 1;
+  text-transform: uppercase;
+  letter-spacing: 0.12em;
+}
+
+/* Uniform top/bottom margin for a whole section. One value mobile, one for lg+. */
+@utility section-y {
+  margin-block: var(--space-section);
+  @media (min-width: 1024px) {
+    margin-block: var(--space-section-lg);
+  }
+}
