@@ -30,13 +30,20 @@
 
   /* 8px spacing scale: every numeric spacing utility steps by 8px (p-1 = 8px, p-2 = 16px, …). */
   --spacing: 0.5rem;
-  /* 1200px for the content, 1600px for the media */
+  /* Single content cap for everything: nav, title, copy, media. */
   --width-content: 1440px;
-  --width-media: 1600px;
 
   /* Vertical rhythm between sections: one value mobile, one for lg+. */
-  --space-section: 24px;
-  --space-section-lg: 32px;
+  --space-section: 48px;
+  --space-section-lg: 80px;
+}
+
+/* Fluid inline padding (the side "margin"): 16px floor → 32px cap.
+   Defined here, not in @theme, so the clamp()+vw value is emitted verbatim as a real custom property. */
+:root {
+  --pad-inline: clamp(16px, 4vw, 32px);
+  /* One fluid gutter for both the column gap and the vertical space between grids. */
+  --gutter: clamp(16px, 1.5vw, 24px);
 }
 
 @layer base {
@@ -68,10 +75,10 @@
 }
 
 @utility text-body {
-  font-family: var(--font-body);
-  font-size: clamp(0.95rem, 1.05vw, 1.125rem);
-  line-height: 1.5;
-}
+    font-family: var(--font-body);
+    font-size: clamp(0.8125rem, 0.75rem + 0.35vw, 1rem);
+    line-height: 1;
+  }
 
 @utility text-meta {
   font-family: var(--font-body);
@@ -86,5 +93,48 @@
   margin-block: var(--space-section);
   @media (min-width: 1024px) {
     margin-block: var(--space-section-lg);
+  }
+}
+
+/* Placement on a 12-col <Grid>: full-width stack at base, your desktop intent at lg.
+   Reads CSS vars set by <Cell>, so arbitrary column/row starts never hit Tailwind's safelist. */
+@utility cell {
+  grid-column: var(--cell-col, 1 / -1);
+  align-self: var(--cell-align, auto);
+  @media (min-width: 1024px) {
+    grid-column: var(--cell-col-lg, var(--cell-col, 1 / -1));
+    grid-row: var(--cell-row-lg, auto);
+  }
+}
+
+/* Foggy glass overlay: a frosted sheet that dissolves top→down. Rather than a
+   hard clip edge you can watch slide, a tall feathered gradient mask wipes the
+   sheet away — the transition zone is ~70% of the height, so there's never a
+   visible line, only a soft gradient that recedes. --fog (0 → 1) is animated. */
+[data-fog] {
+  --fog: 0.5;
+  /* Two soft stops 70% apart ride down as --fog grows; past 100% the sheet is
+     fully gone. The wide gap is the feather; the easing is applied on the JS
+     tween, so the band also accelerates rather than crawling at constant speed. */
+  -webkit-mask-image: linear-gradient(
+    to bottom,
+    transparent calc(var(--fog) * 170% - 70%),
+    rgba(0, 0, 0, 0.4) calc(var(--fog) * 170% - 20%),
+    #000 calc(var(--fog) * 170%)
+  );
+  mask-image: linear-gradient(
+    to bottom,
+    transparent calc(var(--fog) * 170% - 70%),
+    rgba(0, 0, 0, 0.4) calc(var(--fog) * 170% - 20%),
+    #000 calc(var(--fog) * 170%)
+  );
+}
+
+/* Packed wall: one column at base, --masonry-cols at lg. Gutter matches the grid gap. */
+@utility masonry {
+  column-count: 1;
+  column-gap: clamp(16px, 1.5vw, 24px);
+  @media (min-width: 1024px) {
+    column-count: var(--masonry-cols, 3);
   }
 }

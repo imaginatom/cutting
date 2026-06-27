@@ -1,5 +1,5 @@
 import Image from "next/image";
-import { Bleed, Grid } from "@/components/layout";
+import { Bleed, Cell, Grid } from "@/components/layout";
 import { content } from "@/lib/content";
 import heroImg from "@/public/images/coldwell-hero.png";
 
@@ -11,41 +11,50 @@ export function Hero() {
           container-type makes 1cqw == 1% of this box; the word never overflows because
           its size is derived from that width. */}
       <Grid>
-        <div className="col-span-full flex min-h-[50vh] items-end [container-type:inline-size]">
+        <div className="col-span-full [container-type:inline-size]">
+          {/* 3 rows, title in the bottom one: space above = 2x its height. line is 0.82em (leading) → 2 * 0.82 = 1.64em.
+              em resolves against the title's own cqw font-size, so the ratio holds at every width. */}
+          {/* negative bottom margin trims the line-box slack below the baseline so the uppercase
+              glyphs sit flush with the bottom edge. tuned to leading-[0.82]; works in all browsers. */}
           <h1
-            data-anim="heading"
-            className="block w-full whitespace-nowrap font-display uppercase leading-[0.82] tracking-[-0.03em] text-[19cqw]"
+            data-hero="title"
+            className="block w-full whitespace-nowrap pt-[1.64em] mb-[-0.14em] font-display uppercase leading-[0.82] tracking-[-0.03em] text-[19cqw]"
           >
             {hero.title}
           </h1>
         </div>
       </Grid>
 
-      {/* band — nested 3-column grid: left empty, copy in center + right */}
+      {/* band — copy held to the right two thirds, left third left open */}
       <Grid>
-        <div className="col-span-full pb-4">
+        <Cell>
           <Grid sub>
-            <div aria-hidden className="hidden lg:col-span-4 lg:block" />
-            <p data-anim="fade" className="text-body lg:col-span-4">
-              {hero.intro[0]}
-            </p>
-            <p data-anim="fade" className="text-body text-muted lg:col-span-4">
-              {hero.intro[1]}
-            </p>
+            <Cell lg="5 / 9">
+              <p data-hero="fade" className="text-body">
+                {hero.intro[0]}
+              </p>
+            </Cell>
+            <Cell lg="9 / 13">
+              <p data-hero="fade" className="text-body text-muted">
+                {hero.intro[1]}
+              </p>
+            </Cell>
           </Grid>
-        </div>
+        </Cell>
       </Grid>
 
       {/* media — same content cap (1440) as title + paragraphs, scales by aspect ratio, never cropped */}
       <Grid>
-        <Image
-          src={heroImg}
-          alt={hero.image.alt}
-          data-anim="image"
-          priority
-          sizes="(min-width: 1440px) 1440px, 100vw"
-          className="col-span-full block h-auto w-full select-none"
-        />
+        <div className="col-span-full overflow-hidden">
+          <Image
+            src={heroImg}
+            alt={hero.image.alt}
+            data-hero="image"
+            priority
+            sizes="(min-width: 1440px) 1440px, 100vw"
+            className="block h-auto w-full select-none"
+          />
+        </div>
       </Grid>
     </Bleed>
   );

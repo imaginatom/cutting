@@ -52,6 +52,51 @@ you nest boxes, each owning its own layout.
 </Grid>
 ```
 
+## Placement — `<Cell>`
+
+`<Grid sub>` cuts a box into its own 12 columns; `<Cell>` places a block **on**
+those columns. You describe **desktop intent only** — `lg` (and optional `row`)
+— because base is always a full-width stack, so mobile collapse and resize
+follow automatically. No `col-start` classes, no manual base case.
+
+```tsx
+<Grid>
+  <Cell lg="1 / 9">…image, 8 cols…</Cell>
+  <Cell lg="9 / 13" align="end">…caption, bottom-aligned…</Cell>
+</Grid>
+```
+
+- `lg="3 / 9"` is a CSS `grid-column` range (line 3 to line 9 = 6 columns).
+  Grid lines run 1–13, so the last column is `13` and `1 / -1` is full width.
+- `col` overrides the base (mobile) span on the rare occasion the stack needs it.
+- `align` (`start | center | end`) sets `align-self` against the row height.
+
+### Offset and overlap
+
+Vertical placement is grid-driven, never ad-hoc margins, so it survives resize
+and reorder. Put two cells on the **same** `row` to overlap them; give them
+**different** rows for controlled offsets.
+
+```tsx
+<Grid>
+  <Cell lg="1 / 8" row="1">…image…</Cell>
+  <Cell lg="6 / 13" row="1" className="self-end">…title overlapping its edge…</Cell>
+</Grid>
+```
+
+## Packed walls — `<Masonry>`
+
+For Pinterest-style tiles of varied height: one column at base, `cols` at lg.
+Each child carries `break-inside-avoid` and its own bottom spacing.
+
+```tsx
+<Masonry cols={3} className="px-[var(--pad-inline)]">
+  {items.map((it) => (
+    <Image key={it.src} {...it} className="mb-6 block w-full break-inside-avoid" />
+  ))}
+</Masonry>
+```
+
 ## Composition rules
 
 - **Name boxes by meaning** (`intro`, `gallery`, `caption`, `aside`) — never
