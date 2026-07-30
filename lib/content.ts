@@ -42,6 +42,27 @@ export const content = {
     ],
     footnote: "Roubaix / série courte / pièces numérotées",
   },
+  works: {
+    eyebrow: "Campagne",
+    note: "Hiver 26 / trois tableaux",
+    items: [
+      {
+        title: "Masse",
+        meta: "Tableau 01 — Denim 14 oz",
+        image: { alt: "Coldwell — tableau 01, denim dense porté droit" },
+      },
+      {
+        title: "Trait",
+        meta: "Tableau 02 — Coupe droite",
+        image: { alt: "Coldwell — tableau 02, ligne franche en atelier" },
+      },
+      {
+        title: "Série",
+        meta: "Tableau 03 — Cinquante pièces",
+        image: { alt: "Coldwell — tableau 03, série numérotée" },
+      },
+    ],
+  },
   bestSellers: {
     title: "Pièces tenues",
     feature: {

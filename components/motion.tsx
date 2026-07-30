@@ -269,18 +269,20 @@ export function Motion({ children }: { children: React.ReactNode }) {
           const intro = gsap.timeline();
 
           if (heroTitle) {
+            // Per-character masks: each glyph rises out of its own slot, left
+            // to right — the wordmark is assembled, not faded in.
             SplitText.create(heroTitle, {
-              type: "lines",
-              mask: "lines",
+              type: "chars",
+              mask: "chars",
               autoSplit: true,
               onSplit: (self) => {
                 const t = gsap.timeline();
                 // Restore the opacity we pre-hid with; the reveal itself is the mask.
                 t.set(heroTitle, { opacity: 1 });
-                t.from(self.lines, {
+                t.from(self.chars, {
                   yPercent: 110,
-                  duration: 0.8,
-                  stagger: 0.04,
+                  duration: 0.9,
+                  stagger: 0.06,
                   ease: "power3.out",
                 });
                 intro.add(t, 0);
@@ -296,7 +298,7 @@ export function Motion({ children }: { children: React.ReactNode }) {
               heroImg,
               { clipPath: "inset(100% 0% 0% 0%)", scale: 1.1 },
               { clipPath: "inset(0% 0% 0% 0%)", scale: 1, duration: 0.8, ease: "cold" },
-              0.7,
+              0.85, // lands under the tail of the char cascade
             );
           }
 
@@ -306,7 +308,7 @@ export function Motion({ children }: { children: React.ReactNode }) {
               heroFade,
               { opacity: 0, y: 16 },
               { opacity: 1, y: 0, duration: 0.4, stagger: 0.08, ease: "power2.out" },
-              0.9,
+              1.05,
             );
           }
 
@@ -326,6 +328,31 @@ export function Motion({ children }: { children: React.ReactNode }) {
                 },
               },
             );
+          }
+
+          // Takeover: as the page starts to leave, the wordmark sinks against
+          // the scroll while the media frame rises ahead of it — the image
+          // overtakes and clips the title instead of the hero just sliding away.
+          // Pixel deltas from viewport height so both bodies move on one scale.
+          if (heroTitle && heroImg) {
+            const frame = heroImg.parentElement!;
+            const leave = () => ({
+              trigger: heroTitle,
+              start: "top top",
+              end: () => `+=${window.innerHeight * 0.7}`,
+              scrub: true,
+              invalidateOnRefresh: true,
+            });
+            gsap.to(heroTitle, {
+              y: () => window.innerHeight * 0.05,
+              ease: "none",
+              scrollTrigger: leave(),
+            });
+            gsap.to(frame, {
+              y: () => -window.innerHeight * 0.14,
+              ease: "none",
+              scrollTrigger: leave(),
+            });
           }
 
           // — Masked line reveals, split after fonts, once on enter.
@@ -407,6 +434,33 @@ export function Motion({ children }: { children: React.ReactNode }) {
                 ease: "none",
                 scrollTrigger: { trigger: frame, start: "top bottom", end: "bottom top", scrub: true },
               }
+            );
+          }
+
+          // — Weight: scroll velocity shears every framed image by a fraction of
+          // a degree; quickTo settles it with power3.out the instant the wheel
+          // stops. Reads as mass resisting the drag — never jelly, so hard-clamped.
+          const shears = gsap.utils
+            .toArray<HTMLElement>("[data-anim] img, [data-hero='image']", root)
+            .map((img) => gsap.quickTo(img, "skewY", { duration: 0.6, ease: "power3.out" }));
+          lenis.on("scroll", (e) => {
+            const shear = gsap.utils.clamp(-1.4, 1.4, e.velocity * 0.045);
+            for (const s of shears) s(shear);
+          });
+
+          // — Curtain: the inverted section doesn't arrive with a hard static
+          // edge — its dark surface starts clipped and is scrubbed open, so the
+          // mass visibly rises over the light page and seals against its top.
+          // Bottom inset stays negative: the overhanging portrait is never shaved.
+          for (const el of root.querySelectorAll<HTMLElement>("[data-curtain]")) {
+            gsap.fromTo(
+              el,
+              { clipPath: "inset(24svh 0% -24svh 0%)" },
+              {
+                clipPath: "inset(0svh 0% -24svh 0%)",
+                ease: "none",
+                scrollTrigger: { trigger: el, start: "top 92%", end: "top 40%", scrub: true },
+              },
             );
           }
 

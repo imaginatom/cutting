@@ -6,6 +6,7 @@ import { Doctrine } from "@/components/doctrine";
 import { Footer } from "@/components/footer";
 import { Protocol } from "@/components/protocol";
 import { Store } from "@/components/store";
+import { Works } from "@/components/works";
 
 function Nav() {
   return (
@@ -30,6 +31,7 @@ export default function Home() {
       <Nav />
       <Hero />
       <Doctrine />
+      <Works />
       <BestSellers />
       <Protocol />
       <Store />

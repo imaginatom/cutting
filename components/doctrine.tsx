@@ -7,7 +7,7 @@ export function Doctrine() {
   const { doctrine } = content;
 
   return (
-    <Bleed className="section-y bg-fg py-6 text-bg lg:py-12">
+    <Bleed data-curtain className="section-y bg-fg py-6 text-bg lg:py-12">
       <Grid>
         <Cell lg="1 / 4">
           <p data-anim="fade" className="text-meta opacity-70">
